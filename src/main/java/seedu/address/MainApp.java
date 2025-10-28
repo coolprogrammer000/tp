@@ -62,6 +62,8 @@ public class MainApp extends Application {
 
         model = initModelManager(storage, userPrefs);
 
+        storage.saveAddressBook(model.getAddressBook()); // ensures that storage is updated each time a field is changed
+
         logic = new LogicManager(model, storage);
 
         ui = new UiManager(logic);

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.model.person.Person;
 import seedu.address.model.priority.Priority;
 import seedu.address.model.project.Project;
 
@@ -42,12 +43,12 @@ class JsonAdaptedProject {
         this.deadline = source.getDeadline().toString();
 
         this.members = source.getMembers().stream()
-                .map(p -> p.getName().fullName)
+                .map(Person::getId)
                 .collect(java.util.stream.Collectors.toList());
     }
 
     /**
-     * Builds a Project WITHOUT members; member names can be obtained via {@link #getMemberNames()}
+     * Builds a Project WITHOUT members; member names can be obtained via {@link #getMemberIds()}
      * and resolved in JsonSerializableAddressBook after persons are loaded.
      */
     public Project toModelTypeWithoutMembers() throws IllegalValueException {
@@ -79,8 +80,8 @@ class JsonAdaptedProject {
         return new Project(name, pr, dl, java.util.Collections.emptySet());
     }
 
-    /** Expose member names so the loader can resolve them to Person objects. */
-    public List<String> getMemberNames() {
+    /** Expose member ids so the loader can resolve them to Person objects. */
+    public List<String> getMemberIds() {
         return members;
     }
 }

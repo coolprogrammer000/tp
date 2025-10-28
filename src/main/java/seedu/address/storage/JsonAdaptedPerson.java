@@ -29,7 +29,7 @@ import seedu.address.model.tag.Tag;
 class JsonAdaptedPerson {
 
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Person's %s field is missing!";
-
+    private final String id;
     private final String name;
     private final String phone;
     private final String email;
@@ -46,6 +46,7 @@ class JsonAdaptedPerson {
      */
     @JsonCreator
     public JsonAdaptedPerson(
+            @JsonProperty("id") String id,
             @JsonProperty("name") String name,
             @JsonProperty("phone") String phone,
             @JsonProperty("email") String email,
@@ -56,6 +57,7 @@ class JsonAdaptedPerson {
             @JsonProperty("address") String address,
             @JsonProperty("priority") String priority,
             @JsonProperty("tags") List<JsonAdaptedTag> tags) {
+        this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -74,6 +76,7 @@ class JsonAdaptedPerson {
      * Converts a given {@code Person} into this class for Jackson use.
      */
     public JsonAdaptedPerson(Person source) {
+        id = source.getId();
         name = source.getName().fullName;
         phone = source.getPhone().value;
         email = source.getEmail().value;
@@ -180,7 +183,8 @@ class JsonAdaptedPerson {
         final Priority modelPriority = new Priority(priority);
 
         final Set<Tag> modelTags = new HashSet<>(personTags);
-        return new Person(modelName, modelPhone, modelEmail, modelSocials, modelAddress, modelPriority, modelTags);
+        return new Person(id != null ? id : java.util.UUID.randomUUID().toString(), //change any old saves to include ID
+                modelName, modelPhone, modelEmail, modelSocials, modelAddress, modelPriority, modelTags);
     }
 
 }

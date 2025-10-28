@@ -65,6 +65,7 @@ class JsonSerializableAddressBook {
      */
     public AddressBook toModelType() throws IllegalValueException {
         AddressBook addressBook = new AddressBook();
+
         for (JsonAdaptedPerson jsonAdaptedPerson : persons) {
             Person person = jsonAdaptedPerson.toModelType();
             if (addressBook.hasPerson(person)) {
@@ -73,10 +74,12 @@ class JsonSerializableAddressBook {
             addressBook.addPerson(person);
         }
 
-        // Build name -> Person map for member resolution
+        // Build id -> Person and name -> Person map for member resolution
+        Map<String, Person> idMap = new HashMap<>();
         Map<String, Person> nameMap = new HashMap<>();
         for (Person p : addressBook.getPersonList()) {
-            nameMap.put(p.getName().fullName, p);
+            idMap.put(p.getId(), p);
+            nameMap.put(p.getName().fullName, p); // legacy fallback
         }
 
         for (JsonAdaptedProject jsonAdaptedProject : projects) {
@@ -84,12 +87,14 @@ class JsonSerializableAddressBook {
             Project baseProject = jsonAdaptedProject.toModelTypeWithoutMembers();
 
             Set<Person> memberSet = new HashSet<>();
-            for (String memberName : jsonAdaptedProject.getMemberNames()) {
-                Person member = nameMap.get(memberName);
+            for (String memberRef : jsonAdaptedProject.getMemberIds()) {
+                Person member = idMap.get(memberRef);
                 if (member == null) {
-                    throw new IllegalValueException("Member not found by name: " + memberName);
+                    member = nameMap.get(memberRef); // fallback for old JSON which still uses names in projects
                 }
-                memberSet.add(member);
+                if (member != null) {
+                    memberSet.add(member);
+                }
             }
 
             Project fullProject = new Project(

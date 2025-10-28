@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.tag.Tag;
@@ -18,6 +19,7 @@ import seedu.address.model.tag.Tag;
 public class Person {
 
     // Identity fields
+    private final String id;
     private final Name name;
     private final Phone phone;
     private final Email email;
@@ -34,7 +36,17 @@ public class Person {
      */
     public Person(Name name, Phone phone, Email email, Socials socials, Address address, Priority priority,
             Set<Tag> tags) {
+        this(UUID.randomUUID().toString(), name, phone, email, socials, address, priority, tags);
+    }
+
+    /**
+     * Includes an immutable {@code id} tag to each {@code Person}
+     */
+
+    public Person(String id, Name name, Phone phone, Email email, Socials socials, Address address, Priority priority,
+                   Set<Tag> tags) {
         requireAllNonNull(name, phone, email, address, tags);
+        this.id = id;
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -43,6 +55,10 @@ public class Person {
         this.address = address;
         this.priority = priority;
         this.tags.addAll(tags);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public Name getName() {
