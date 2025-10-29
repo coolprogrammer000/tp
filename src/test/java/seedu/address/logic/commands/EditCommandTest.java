@@ -16,6 +16,10 @@ import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
@@ -30,10 +34,6 @@ import seedu.address.model.priority.Priority;
 import seedu.address.model.project.Project;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 import seedu.address.testutil.PersonBuilder;
-
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for EditCommand.
