@@ -26,8 +26,14 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
+import seedu.address.model.priority.Priority;
+import seedu.address.model.project.Project;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 import seedu.address.testutil.PersonBuilder;
+
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for EditCommand.
@@ -35,6 +41,7 @@ import seedu.address.testutil.PersonBuilder;
 public class EditCommandTest {
 
     private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+    private Model modelWithProjects;
 
     @Test
     public void execute_allFieldsSpecifiedUnfilteredList_success() {
@@ -192,4 +199,74 @@ public class EditCommandTest {
         assertEquals(expected, editCommand.toString());
     }
 
+    @Test
+    public void execute_updatesProjectsWithEditedPerson() throws Exception {
+        Person originalPerson = new PersonBuilder()
+                .withName("Alice")
+                .withPhone("1111")
+                .build();
+
+        Person editedPerson = new PersonBuilder(originalPerson)
+                .withName("Alice Chan")
+                .build();
+
+        EditCommand.EditPersonDescriptor descriptor = new EditCommand.EditPersonDescriptor();
+        descriptor.setName(editedPerson.getName());
+        descriptor.setPhone(editedPerson.getPhone());
+
+        Set<Person> membersAlpha = new HashSet<>();
+        membersAlpha.add(originalPerson);
+
+        Project projectWithPerson = new Project(
+                "Alpha",
+                Priority.HIGH,
+                LocalDate.now().plusDays(1),
+                membersAlpha
+        );
+
+        Set<Person> membersBeta = new HashSet<>();
+        Project projectWithoutPerson = new Project(
+                "Beta",
+                Priority.MEDIUM,
+                LocalDate.now().plusDays(1),
+                membersBeta
+        );
+
+        AddressBook addressBook = new AddressBook();
+        addressBook.addPerson(originalPerson);
+        addressBook.addProject(projectWithPerson);
+        addressBook.addProject(projectWithoutPerson);
+
+        modelWithProjects = new ModelManager(addressBook, new UserPrefs());
+
+        Index targetIndex = Index.fromZeroBased(0);
+        EditCommand editCommand = new EditCommand(targetIndex, descriptor);
+        editCommand.execute(modelWithProjects);
+
+        //Alpha should now contain the edited person, not the old one
+        Project updatedAlpha = modelWithProjects.getFilteredProjectList().stream()
+                .filter(p -> p.getName().equals("Alpha"))
+                .findFirst()
+                .orElseThrow();
+
+        assertTrue(
+                updatedAlpha.getMembers().stream().anyMatch(p -> p.getName().fullName.equals("Alice Chan"))
+        );
+
+        assertFalse(
+                updatedAlpha.getMembers().stream().anyMatch(p -> p.getName().fullName.equals("Alice"))
+        );
+
+        //Beta should still be unchanged
+        Project updatedBeta = modelWithProjects.getFilteredProjectList().stream()
+                .filter(p -> p.getName().equals("Beta"))
+                .findFirst()
+                .orElseThrow();
+
+        assertEquals("Beta", updatedBeta.getName());
+        assertTrue(updatedBeta.getMembers().isEmpty(), "Beta should still have no members");
+
+        //Still have exactly 2 projects in the model
+        assertEquals(2, modelWithProjects.getFilteredProjectList().size());
+    }
 }
