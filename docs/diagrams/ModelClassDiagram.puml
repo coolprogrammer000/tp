@@ -18,7 +18,17 @@ Class Address
 Class Email
 Class Name
 Class Phone
+Class Priority
 Class Tag
+
+Class Socials
+Class Discord
+Class LinkedIn
+Class Instagram
+Class YouTube
+
+Class UniqueProjectList
+Class Project
 
 Class I #FFFFFF
 }
@@ -37,11 +47,24 @@ UserPrefs .up.|> ReadOnlyUserPrefs
 
 AddressBook *--> "1" UniquePersonList
 UniquePersonList --> "~* all" Person
+note on link
+  No duplicate Name allowed
+end note
 Person *--> Name
 Person *--> Phone
 Person *--> Email
 Person *--> Address
+Person *--> Priority
 Person *--> "*" Tag
+
+AddressBook *--> "1" UniqueProjectList
+UniqueProjectList --> "~* all" Project
+
+Person *--> "1" Socials
+Socials *--> Discord
+Socials *--> LinkedIn
+Socials *--> Instagram
+Socials *--> YouTube
 
 Person -[hidden]up--> I
 UniquePersonList -[hidden]right-> I
