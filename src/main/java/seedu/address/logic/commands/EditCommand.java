@@ -112,6 +112,7 @@ public class EditCommand extends Command {
         assert personToEdit != null;
 
         // Update fields if new values are provided; if null, keep existing values
+        String id = personToEdit.getId();
         Name updatedName = editPersonDescriptor.getName().orElse(personToEdit.getName());
         Phone updatedPhone = editPersonDescriptor.getPhone().orElse(personToEdit.getPhone());
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
@@ -128,7 +129,7 @@ public class EditCommand extends Command {
         Priority updatedPriority = editPersonDescriptor.getPriority().orElse(personToEdit.getPriority());
         Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
 
-        return new Person(updatedName, updatedPhone, updatedEmail, updatedSocials, updatedAddress, updatedPriority,
+        return new Person(id, updatedName, updatedPhone, updatedEmail, updatedSocials, updatedAddress, updatedPriority,
                 updatedTags);
     }
 
